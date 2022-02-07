@@ -395,11 +395,26 @@ class TimerStart(pygame.sprite.Sprite):
         self.image = pygame.font.SysFont("Arial", 48).render("До начала: " + str(self.seconds), True, 'red')
         self.rect = self.image.get_rect()
         self.rect.x = 325 - self.image.get_rect().centerx
-        self.rect.y = 150
+        self.rect.y = 500
 
     def update(self, *args):
         self.seconds -= 1
         self.image = pygame.font.SysFont("Arial", 48).render("До начала: " + str(self.seconds), True, 'red')
+
+
+class StartFon(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = pygame.transform.scale(load_image("start.jpg"), (650, 600))
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+    def update(self, return_sec=False):
+        if self.rect.x - 1 >= -650:
+            self.rect.x -= 1
+        else:
+            pygame.time.set_timer(game_over, 0)
 
 
 if __name__ == '__main__':
@@ -413,12 +428,15 @@ if __name__ == '__main__':
     wall_sprites = pygame.sprite.Group()
     game_over_sprite = pygame.sprite.Group()
     game_start_sprites = pygame.sprite.Group()
+    start_fon_anim_sprites = pygame.sprite.Group()
+    StartFon(start_fon_anim_sprites)
     TimerStart(game_start_sprites)
     GameOver(game_over_sprite)
     ghosts = [Ghost()]
     pacman = Pacman()
     game_over = pygame.USEREVENT + 1
     game_start = pygame.USEREVENT + 2
+    start_fon_anim = pygame.USEREVENT + 3
     pygame.mixer.music.load("data/music.mp3")
     pygame.mixer.music.set_volume(0.3)
     pellets_small = Pellets.createListSmallDot(Pellets())
@@ -429,18 +447,8 @@ if __name__ == '__main__':
     Music.radio.play(Music.start_game)
     pygame.time.set_timer(game_start, 1000)
     while True:
-        screen.blit(image, (100, 0))
-        screen.blit(pacman.image, pacman.rect)
-        screen.blit(pacman.scoreDisplayPacman(), (10, 10))
-        for pellet in pellets_small:
-            screen.blit(Pellets.images[0],
-                        (pellet[0] + Pellets.shifts_images[0][0], pellet[1] + Pellets.shifts_images[0][1]))
-        for pellet in pellets_big:
-            screen.blit(Pellets.images[1],
-                        (pellet[0] + Pellets.shifts_images[1][0], pellet[1] + Pellets.shifts_images[1][1]))
-        for ghost in ghosts:
-            screen.blit(ghost.surface, ghost.rect)
-        screen.blit(pacman.livesDisplayPacman(), (450, 10))
+        screen.fill('black')
+        start_fon_anim_sprites.draw(screen)
         game_start_sprites.draw(screen)
         for event in pygame.event.get():
             if event.type == game_start:
@@ -448,6 +456,18 @@ if __name__ == '__main__':
         if not pygame.mixer.get_busy():
             break
         pygame.display.flip()
+    pygame.time.set_timer(start_fon_anim, 1)
+    while True:
+        screen.fill('black')
+        start_fon_anim_sprites.draw(screen)
+        for event in pygame.event.get():
+            if event.type == start_fon_anim:
+                print((start_fon_anim_sprites.sprites()[0].rect.x))
+                start_fon_anim_sprites.update()
+        if start_fon_anim_sprites.sprites()[0].rect.x == -650:
+            break
+        pygame.display.flip()
+
     game = True
 
     while game:
@@ -534,6 +554,7 @@ if __name__ == '__main__':
         while True:
             if not pygame.mixer.get_busy():
                 break
+        pygame.mixer.music.stop()
     print('gameEnd')
     pygame.time.set_timer(game_over, 2)
     while True:
