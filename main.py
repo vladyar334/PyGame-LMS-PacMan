@@ -305,7 +305,7 @@ class Pacman(Character):
         self.speed = 5
         self.moveUp = self.moveLeft = self.moveDown = self.moveRight = False
         self.score = 0
-        self.lives = 1
+        self.lives = 3
         self.frame = 0
         self.isFirstPic = True
 
