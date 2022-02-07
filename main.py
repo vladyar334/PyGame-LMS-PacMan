@@ -462,7 +462,6 @@ if __name__ == '__main__':
         start_fon_anim_sprites.draw(screen)
         for event in pygame.event.get():
             if event.type == start_fon_anim:
-                print((start_fon_anim_sprites.sprites()[0].rect.x))
                 start_fon_anim_sprites.update()
         if start_fon_anim_sprites.sprites()[0].rect.x == -650:
             break
